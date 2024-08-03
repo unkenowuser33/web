@@ -8,8 +8,6 @@ let carpetaNombre = parametros.get("nombre");
 if (!carpetaNombre) {
   // Si 'nombre' no está presente, genera un número aleatorio
   carpetaNombre = generarCadenaAleatoria();
-  // Reemplaza espacios en blanco con guiones bajos
-  carpetaNombre = carpetaNombre.replace(/\s+/g, "_");
   // Agrega el parámetro 'nombre' a la URL
   const urlConParametro = urlActual.includes("?")
     ? `${urlActual}&nombre=${carpetaNombre}`
@@ -105,6 +103,8 @@ function generarCadenaAleatoria() {
 //   xhr.open('POST', 'upload.php', true);
 //   xhr.send(formData);
 // }
+
+
 
 //DROP AREA
 

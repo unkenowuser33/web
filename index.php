@@ -13,8 +13,9 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_FILES['archivo'])) {
             $archivo = $_FILES['archivo'];
-
-            if (move_uploaded_file($archivo['tmp_name'], $carpetaRuta . '/' . $archivo['name'])) {
+            // Reemplazar los espacios en blanco por guiones
+            $nombreArchivo = str_replace(' ', '_', $archivo['name']);
+            if (move_uploaded_file($archivo['tmp_name'], $carpetaRuta . '/' . $nombreArchivo)) {
                 $subido = true;
                 $mensaje = "Archivo subido con éxito.";
             } else {
@@ -69,8 +70,6 @@ try {
             </div>
 
             <div class="container2">
-               
-
                 <div id="file-list" class="pila">
                     <?php
                     $targetDir = $carpetaRuta;
