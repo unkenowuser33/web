@@ -6,18 +6,18 @@ const parametros = new URLSearchParams(window.location.search);
 let carpetaNombre = parametros.get("nombre");
 
 if (!carpetaNombre) {
-  // Si 'nombre' no está presente, genera un número aleatorio
+  // Si 'nombre' no está presente, genera una cadena aleatoria
   carpetaNombre = generarCadenaAleatoria();
+  console.log("Generando cadena aleatoria: " + carpetaNombre);
   // Agrega el parámetro 'nombre' a la URL
   const urlConParametro = urlActual.includes("?")
     ? `${urlActual}&nombre=${carpetaNombre}`
     : `${urlActual}?nombre=${carpetaNombre}`;
+  console.log("Redirigiendo a: " + urlConParametro);
   // Redirige a la nueva URL con el parámetro 'nombre'
   window.location.href = urlConParametro;
-} else {
-  // Llama a la función para crear la carpeta con el nombre obtenido
-  crearCarpeta(carpetaNombre);
 }
+ // (Comentario 1) Elimine el else al ser algo redundante e innecesario.
 
 // Función para generar una cadena aleatoria
 function generarCadenaAleatoria() {
@@ -73,13 +73,13 @@ function generarCadenaAleatoria() {
   return cadenaAleatoria;
 }
 
-// //BARRA DE PROGRESO
 // function uploadFile(carpetaRuta, inputId) {
+// //BARRA DE PROGRESO
 //   var archivoInput = document.getElementById(inputId);
 //   var archivo = archivoInput.files[0];
 //   var progressBar = document.getElementById('progressBar');
-
 //   var formData = new FormData();
+
 //   formData.append('archivo', archivo);
 
 //   var xhr = new XMLHttpRequest();
@@ -103,8 +103,6 @@ function generarCadenaAleatoria() {
 //   xhr.open('POST', 'upload.php', true);
 //   xhr.send(formData);
 // }
-
-
 
 //DROP AREA
 
@@ -152,5 +150,3 @@ Form.addEventListener("submit", (e) => {
     alert("Por favor, seleccione un archivo primero.");
   }
 });
-
-//progres bar

@@ -45,30 +45,47 @@ try {
 
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compartir archivos</title>
     <script src="parametro.js"></script>
     <link rel="stylesheet" href="estilo.css">
+    <style>
+        #progress-container {
+            display: none;
+            width: 100%;
+            background-color: #f3f3f3;
+            border: 1px solid #ddd;
+            padding: 5px;
+            margin-top: 10px;
+        }
+        #progress-bar {
+            width: 0;
+            height: 20px;
+            background-color: #4caf50;
+            text-align: center;
+            color: white;
+            line-height: 20px;
+        }
+    </style>
 </head>
-
 <body>
     <h1>Compartir archivos <sup class="beta">BETA</sup></h1>
     <div class="content">
         <h3>Sube tus archivos y comparte este enlace temporal: <span>ibu.pe/?nombre=<?php echo $carpetaNombre;?></span></h3>
         <div class="container">
             <div class="drop-area" id="drop-area">
-                <form action="" id="form" method="POST" enctype="multipart/form-data">
+                <form id="form" method="POST" enctype="multipart/form-data">
                     <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" style="fill:#0730c5;transform: ;msFilter:;"><path d="M13 19v-4h3l-4-5-4 5h3v4z"></path><path d="M7 19h2v-2H7c-1.654 0-3-1.346-3-3 0-1.404 1.199-2.756 2.673-3.015l.581-.102.192-.558C8.149 8.274 9.895 7 12 7c2.757 0 5 2.243 5 5v1h1c1.103 0 2 .897 2 2s-.897 2-2 2h-3v2h3c2.206 0 4-1.794 4-4a4.01 4.01 0 0 0-3.056-3.888C18.507 7.67 15.56 5 12 5 9.244 5 6.85 6.611 5.757 9.15 3.609 9.792 2 11.82 2 14c0 2.757 2.243 5 5 5z"></path></svg> <br>
-                    <input type="file" class="file-input" name="archivo" id="archivo" onchange="document.getElementById('form').submit()">
+                    <input type="file" class="file-input" name="archivo" id="archivo">
                     <label> Arrastra tus archivos aquí<br>o</label>
-                    <p><b>Abre el explorador</b></p> 
-                    
+                    <p><b>Abre el explorador</b></p>
                 </form>
+                <div id="progress-container">
+                    <div id="progress-bar">0%</div>
+                </div>
             </div>
-
             <div class="container2">
                 <div id="file-list" class="pila">
                     <?php
@@ -108,9 +125,46 @@ try {
             </div>
         </div>
     </div>
+    
+    <!-- progressBar-->
+    <script>
+        document.getElementById('archivo').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('archivo', file);
 
-    <!-- <script src="parametro.js"></script> -->
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '', true);
 
+                xhr.upload.addEventListener('progress', function(event) {
+                    if (event.lengthComputable) {
+                        const percentComplete = Math.round((event.loaded / event.total) * 100);
+                        const progressBar = document.getElementById('progress-bar');
+                        progressBar.style.width = percentComplete + '%';
+                        progressBar.textContent = percentComplete + '%';
+                        document.getElementById('progress-container').style.display = 'block';
+                    }
+                });
+
+                xhr.addEventListener('load', function() {
+                    if (xhr.status === 200) {
+                        document.getElementById('progress-bar').style.width = '100%';
+                        document.getElementById('progress-bar').textContent = '100%';
+                        setTimeout(() => {
+                            document.getElementById('progress-container').style.display = 'none';
+                            /* Recargar pagina simple
+                            location.reload();*/
+
+                            // Recargar pagina con un parámetro único para evitar el caché
+                            window.location.href = window.location.href.split('?')[0] + '?nombre=<?php echo $carpetaNombre; ?>&t=' + new Date().getTime();
+                        }, 2000);
+                    }
+                });
+
+                xhr.send(formData);
+            }
+        });
+    </script>
 </body>
-
 </html>
