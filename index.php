@@ -1,5 +1,6 @@
 <?php
-$carpetaNombre = isset($_GET['nombre']) ? $_GET['nombre'] : '';
+// (1) Obtener nombre del path si no está en los parámetros
+$carpetaNombre = isset($_GET['nombre']) ? $_GET['nombre'] : trim($_SERVER['REQUEST_URI'], '/');
 $carpetaRuta = "./descarga/" . $carpetaNombre;
 
 try {
@@ -13,7 +14,6 @@ try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_FILES['archivo'])) {
             $archivo = $_FILES['archivo'];
-            // Reemplazar los espacios en blanco por guiones
             $nombreArchivo = str_replace(' ', '_', $archivo['name']);
             if (move_uploaded_file($archivo['tmp_name'], $carpetaRuta . '/' . $nombreArchivo)) {
                 $subido = true;
@@ -45,6 +45,7 @@ try {
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -60,6 +61,7 @@ try {
             padding: 5px;
             margin-top: 10px;
         }
+
         #progress-bar {
             width: 0;
             height: 20px;
@@ -70,15 +72,39 @@ try {
         }
     </style>
 </head>
+
 <body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="brand">UploadYourFile.com</a>
+            <button class="menu-toggle" aria-label="Abrir menú">
+                <span class="hamburger"></span>
+            </button>
+            <ul class="navbar-menu">
+                <li><a href="#">Inicio</a></li>
+                <li><a href="#">Servicios</a></li>
+                <li><a href="#">Acerca de</a></li>
+                <li><a href="#">Contacto</a></li>
+            </ul>
+        </div>
+    </nav>
+
+
     <h1>Compartir archivos <sup class="beta">BETA</sup></h1>
     <div class="content">
-        <h3>Sube tus archivos y comparte este enlace temporal: <span>ibu.pe/?nombre=<?php echo $carpetaNombre;?></span></h3>
+        <h3>Sube tus archivos y comparte este enlace:
+            <span><?php echo $_SERVER['HTTP_HOST'] . '/' . $carpetaNombre; ?></span></h3>
         <div class="container">
             <div class="drop-area" id="drop-area">
                 <form id="form" method="POST" enctype="multipart/form-data">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" style="fill:#0730c5;transform: ;msFilter:;"><path d="M13 19v-4h3l-4-5-4 5h3v4z"></path><path d="M7 19h2v-2H7c-1.654 0-3-1.346-3-3 0-1.404 1.199-2.756 2.673-3.015l.581-.102.192-.558C8.149 8.274 9.895 7 12 7c2.757 0 5 2.243 5 5v1h1c1.103 0 2 .897 2 2s-.897 2-2 2h-3v2h3c2.206 0 4-1.794 4-4a4.01 4.01 0 0 0-3.056-3.888C18.507 7.67 15.56 5 12 5 9.244 5 6.85 6.611 5.757 9.15 3.609 9.792 2 11.82 2 14c0 2.757 2.243 5 5 5z"></path></svg> <br>
-                    <input type="file" class="file-input" name="archivo" id="archivo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"
+                        style="fill:#0730c5;transform: ;msFilter:;">
+                        <path d="M13 19v-4h3l-4-5-4 5h3v4z"></path>
+                        <path
+                            d="M7 19h2v-2H7c-1.654 0-3-1.346-3-3 0-1.404 1.199-2.756 2.673-3.015l.581-.102.192-.558C8.149 8.274 9.895 7 12 7c2.757 0 5 2.243 5 5v1h1c1.103 0 2 .897 2 2s-.897 2-2 2h-3v2h3c2.206 0 4-1.794 4-4a4.01 4.01 0 0 0-3.056-3.888C18.507 7.67 15.56 5 12 5 9.244 5 6.85 6.611 5.757 9.15 3.609 9.792 2 11.82 2 14c0 2.757 2.243 5 5 5z">
+                        </path>
+                    </svg> <br>
+                    <input type="file" class="file-input" name="archivo" id="archivo" multiple>
                     <label> Arrastra tus archivos aquí<br>o</label>
                     <p><b>Abre el explorador</b></p>
                 </form>
@@ -125,46 +151,45 @@ try {
             </div>
         </div>
     </div>
-    
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2024 Unknownuser43. All rights reserved.</p>
+            <ul class="footer-menu">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </div>
+    </footer>
+
     <!-- progressBar-->
     <script>
-        document.getElementById('archivo').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const formData = new FormData();
-                formData.append('archivo', file);
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navbarMenu = document.querySelector('.navbar-menu');
 
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', '', true);
+            menuToggle.addEventListener('click', () => {
+                navbarMenu.classList.toggle('show');
+            });
 
-                xhr.upload.addEventListener('progress', function(event) {
-                    if (event.lengthComputable) {
-                        const percentComplete = Math.round((event.loaded / event.total) * 100);
-                        const progressBar = document.getElementById('progress-bar');
-                        progressBar.style.width = percentComplete + '%';
-                        progressBar.textContent = percentComplete + '%';
-                        document.getElementById('progress-container').style.display = 'block';
-                    }
-                });
+            // Cierra el menú cuando se hace clic fuera de él
+            document.addEventListener('click', (event) => {
+                const isClickInsideMenu = navbarMenu.contains(event.target);
+                const isClickInsideToggle = menuToggle.contains(event.target);
+                const isClickInsideNavbar = document.querySelector('.navbar').contains(event.target);
 
-                xhr.addEventListener('load', function() {
-                    if (xhr.status === 200) {
-                        document.getElementById('progress-bar').style.width = '100%';
-                        document.getElementById('progress-bar').textContent = '100%';
-                        setTimeout(() => {
-                            document.getElementById('progress-container').style.display = 'none';
-                            /* Recargar pagina simple
-                            location.reload();*/
+                if (!isClickInsideMenu && !isClickInsideToggle && !isClickInsideNavbar) {
+                    navbarMenu.classList.remove('show');
+                }
+            });
+        });
 
-                            // Recargar pagina con un parámetro único para evitar el caché
-                            window.location.href = window.location.href.split('?')[0] + '?nombre=<?php echo $carpetaNombre; ?>&t=' + new Date().getTime();
-                        }, 2000);
-                    }
-                });
-
-                xhr.send(formData);
-            }
+        document.getElementById('archivo').addEventListener('change', function (event) {
+            const files = event.target.files;
+            handleFiles(files);
         });
     </script>
 </body>
+
 </html>
