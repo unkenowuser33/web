@@ -93,7 +93,8 @@ try {
     <h1>Compartir archivos <sup class="beta">BETA</sup></h1>
     <div class="content">
         <h3>Sube tus archivos y comparte este enlace:
-            <span><?php echo $_SERVER['HTTP_HOST'] . '/' . $carpetaNombre; ?></span></h3>
+            <span><?php echo $_SERVER['HTTP_HOST'] . '/' . $carpetaNombre; ?></span>
+        </h3>
         <div class="container">
             <div class="drop-area" id="drop-area">
                 <form id="form" method="POST" enctype="multipart/form-data">
@@ -163,7 +164,6 @@ try {
         </div>
     </footer>
 
-    <!-- progressBar-->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const menuToggle = document.querySelector('.menu-toggle');
